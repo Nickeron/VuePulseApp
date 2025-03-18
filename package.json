@@ -31,8 +31,9 @@
     "reka-ui": "^2.0.2",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7",
+    "unplugin-vue-components": "^28.4.1",
     "vue": "^3.4.21",
-    "vue-router": "^4.3.0"
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.6.0",
