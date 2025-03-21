@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useErrorStore } from '@/stores/error';
 import { type Task, taskQuery } from '@/utils/supaQueries';
 
 const route = useRoute('/tasks/[id]');
@@ -9,9 +10,9 @@ watch(() => task.value?.name, () => {
 });
 
 const getTask = async () => {
-    const { data, error } = await taskQuery(route.params.id as number);
+    const { data, error, status } = await taskQuery(route.params.id);
     if (error) {
-        console.error(error)
+        useErrorStore().setError({ error, customCode: status })
     } else {
         task.value = data
     }
