@@ -6,4 +6,17 @@ const router = createRouter({
   routes
 })
 
+router.beforeEach(async (to, from, next) => {
+  const authStore = useAuthStore()
+  await authStore.getSession()
+
+  if (!authStore.user && to.meta.requiresAuth) {
+    return next({ name: '/login' })
+  }
+
+  if (authStore.user && !to.meta.requiresAuth) {
+    return next({ name: '/' })
+  }
+})
+
 export default router
