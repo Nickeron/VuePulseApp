@@ -4,6 +4,10 @@ import AppErrorPage from './components/AppError/AppErrorPage.vue';
 const errorStore = useErrorStore();
 
 onErrorCaptured((error) => { errorStore.setError({ error }) });
+
+onMounted(() => {
+  useAuthStore().trackAuthChanges();
+});
 </script>
 
 <template>
