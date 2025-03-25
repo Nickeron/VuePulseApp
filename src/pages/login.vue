@@ -6,15 +6,14 @@ const formData = ref({
     password: ''
 })
 
-const _error = ref('')
-
+const { serverError, handleServerError } = useFormErrors()
 const router = useRouter()
 
 const signIn = async () => {
     const { error } = await login(formData.value)
     if (!error) return router.push('/')
 
-    _error.value = error.message
+    handleServerError(error)
 }
 </script>
 
@@ -35,7 +34,7 @@ const signIn = async () => {
                     <div class="grid gap-2">
                         <Label id="email" class="text-left">Email</Label>
                         <Input type="email" placeholder="johndoe19@example.com" required v-model="formData.email"
-                            :class="{ 'border-red-500': _error }" />
+                            :class="{ 'border-red-500': serverError }" />
                     </div>
                     <div class="grid gap-2">
                         <div class="flex items-center">
@@ -43,10 +42,10 @@ const signIn = async () => {
                             <a href="#" class="inline-block ml-auto text-xs underline"> Forgot your password? </a>
                         </div>
                         <Input id="password" type="password" autocomplete required v-model="formData.password"
-                            :class="{ 'border-red-500': _error }" />
+                            :class="{ 'border-red-500': serverError }" />
                     </div>
-                    <ul class="text-red-500 text-sm list-disc list-inside" v-if="_error">
-                        <li v-if="_error">{{ _error }}</li>
+                    <ul class="text-red-500 text-sm list-disc list-inside" v-if="serverError">
+                        <li v-if="serverError">{{ serverError }}</li>
                     </ul>
                     <Button type="submit" class="w-full"> Login </Button>
                 </form>
