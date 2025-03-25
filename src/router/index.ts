@@ -6,16 +6,22 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, from) => {
   const authStore = useAuthStore()
   await authStore.getSession()
 
-  if (!authStore.user && to.meta.requiresAuth) {
-    return next({ name: '/login' })
+  const isAuthPage = ['/login', '/register'].includes(to.path)
+
+  if (!authStore.user && !isAuthPage) {
+    return {
+      name: '/login'
+    }
   }
 
-  if (authStore.user && !to.meta.requiresAuth) {
-    return next({ name: '/' })
+  if (authStore.user && isAuthPage) {
+    return {
+      name: '/'
+    }
   }
 })
 
