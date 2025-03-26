@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabaseClient'
-import { profileQuery } from '@/utils/supaQueries'
+import { profileByIdQuery } from '@/utils/supaQueries'
 import type { Session, User } from '@supabase/supabase-js'
 import type { Tables } from 'database/types'
 
@@ -18,7 +18,7 @@ export const useAuthStore = defineStore('auth-store', () => {
       return
     }
 
-    const { data } = await profileQuery(user.value.id)
+    const { data } = await profileByIdQuery(user.value.id)
 
     profile.value = data || null
   }
