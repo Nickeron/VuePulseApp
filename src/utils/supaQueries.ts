@@ -15,8 +15,13 @@ export const profileByIdQuery = (id: string) =>
 export const profileByUsernameQuery = (username: string) =>
   supabase.from('profiles').select('*').eq('username', username).single()
 
+export const groupedProfilesQuery = (userIds: string[]) =>
+  supabase.from('profiles').select('username, avatar_url, id, full_name').in('id', userIds)
+
 export type TaskWithProjects = QueryData<typeof tasksWithProjectsQuery>
 export type Task = QueryData<ReturnType<typeof taskQuery>> // because this is a function
 
 export type Projects = QueryData<typeof projectsQuery>
 export type Project = QueryData<ReturnType<typeof projectQuery>> // because this is a function
+
+export type Collabs = QueryData<ReturnType<typeof groupedProfilesQuery>>
