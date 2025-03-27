@@ -2,7 +2,7 @@
 const { slug } = useRoute('/projects/[slug]').params
 const projectsLoader = useProjectsStore()
 const { project } = storeToRefs(projectsLoader)
-const { getProject } = projectsLoader
+const { getProject, updateProject } = projectsLoader
 
 watch(() => project.value?.name, () => {
 	usePageStore().pageData.title = `Project: ${project.value?.name}`;
@@ -16,7 +16,7 @@ await getProject(slug as string);
 		<TableRow>
 			<TableHead> Name </TableHead>
 			<TableCell>
-				<AppInPlaceEditText v-model="project.name" />
+				<AppInPlaceEditText v-model="project.name" @commit="updateProject" />
 			</TableCell>
 		</TableRow>
 		<TableRow>

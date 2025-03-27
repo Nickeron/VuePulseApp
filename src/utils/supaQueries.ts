@@ -8,6 +8,8 @@ export const taskQuery = (id: number) =>
 export const projectsQuery = supabase.from('projects').select('*')
 export const projectQuery = (slug: string) =>
   supabase.from('projects').select('*, tasks(id, name, status, due_date)').eq('slug', slug).single()
+export const projectUpdateQuery = (updateProject = {}, id: number) =>
+  supabase.from('projects').update(updateProject).eq('id', id)
 
 export const profileByIdQuery = (id: string) =>
   supabase.from('profiles').select('*').eq('id', id).single()
