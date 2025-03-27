@@ -9,6 +9,12 @@ const { projects } = storeToRefs(projectsLoader);
 const { getProjects } = projectsLoader;
 
 await getProjects();
+
+const { getGroupedCollabs, groupedCollabs } = useCollabs();
+
+if (projects.value) {
+	await getGroupedCollabs(projects.value);
+}
 </script>
 
 <template>
