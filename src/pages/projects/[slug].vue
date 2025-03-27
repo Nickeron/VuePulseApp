@@ -1,23 +1,14 @@
 <script setup lang="ts">
-import { type Project, projectQuery } from '@/utils/supaQueries';
-
-const route = useRoute('/projects/[slug]');
-const project = ref<Project | null>(null);
+const { slug } = useRoute('/projects/[slug]').params
+const projectsLoader = useProjectsStore()
+const { project } = storeToRefs(projectsLoader)
+const { getProject } = projectsLoader
 
 watch(() => project.value?.name, () => {
 	usePageStore().pageData.title = `Project: ${project.value?.name}`;
 });
 
-const getProject = async () => {
-	const { data, error, status } = await projectQuery(route.params.slug);
-	if (error) {
-		useErrorStore().setError({ error, customCode: status })
-	} else {
-		project.value = data
-	}
-};
-
-await getProject();
+await getProject(slug as string);
 </script>
 
 <template>
