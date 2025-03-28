@@ -67,8 +67,14 @@ const collabs = project.value?.collaborators ? await getProfilesByIds(project.va
 					</TableHeader>
 					<TableBody>
 						<TableRow v-for="task in project.tasks" :key="task.id">
-							<TableCell> {{ task.name }} </TableCell>
-							<TableCell> {{ task.status }} </TableCell>
+							<TableCell class="p-0">
+								<RouterLink class="text-left block hover:bg-muted p-4"
+									:to="{ name: '/tasks/[id]', params: { id: task.id } }">{{ task.name }}
+								</RouterLink>
+							</TableCell>
+							<TableCell>
+								<AppInPlaceEditStatus :model-value="task.status" />
+							</TableCell>
 							<TableCell> {{ task.due_date }} </TableCell>
 						</TableRow>
 					</TableBody>
