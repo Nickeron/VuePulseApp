@@ -1,58 +1,57 @@
 <script setup lang="ts">
-import { useErrorStore } from '@/stores/error';
-import { type Task, taskQuery } from '@/utils/supaQueries';
 
-const route = useRoute('/tasks/[id]');
-const task = ref<Task | null>(null);
+const tasksLoader = useTasksStore()
+const { task } = storeToRefs(tasksLoader)
+const { getTask, updateTask } = tasksLoader;
+
+const id = useRoute('/tasks/[id]').params.id;
 
 watch(() => task.value?.name, () => {
     usePageStore().pageData.title = `Task: ${task.value?.name}`;
 });
 
-const getTask = async () => {
-    const { data, error, status } = await taskQuery(route.params.id);
-    if (error) {
-        useErrorStore().setError({ error, customCode: status })
-    } else {
-        task.value = data
-    }
-};
+await getTask(id as unknown as number);
 
-await getTask();
+const { getProfilesByIds } = useCollabs();
+// Get collaborators' profiles only when the task has collaborators ids
+const collabs = task.value?.collaborators ? await getProfilesByIds(task.value?.collaborators) : [];
 </script>
 
 <template>
     <Table v-if="task">
         <TableRow>
             <TableHead> Name </TableHead>
-            <TableCell> {{ task.name }} </TableCell>
+            <TableCell>
+                <AppInPlaceEditText v-model="task.name" @commit="updateTask" />
+            </TableCell>
         </TableRow>
         <TableRow>
             <TableHead> Description </TableHead>
             <TableCell>
-                {{ task.description }}
+                <AppInPlaceEditTextArea v-model="task.description" @commit="updateTask" />
             </TableCell>
         </TableRow>
         <TableRow>
-            <TableHead> Assignee </TableHead>
-            <TableCell>{{ task.collaborators }}</TableCell>
-        </TableRow>
-        <TableRow>
             <TableHead> Project </TableHead>
-            <TableCell> {{ task.projects?.name }} </TableCell>
+            <TableCell class="p-0">
+                <RouterLink class="text-left block hover:bg-muted p-4"
+                    :to="{ name: '/projects/[slug]', params: { slug: task.projects?.slug } }">{{ task.projects?.name }}
+                </RouterLink>
+            </TableCell>
         </TableRow>
         <TableRow>
             <TableHead> Status </TableHead>
-            <TableCell>{{ task.status }}</TableCell>
+            <AppInPlaceEditStatus v-model="task.status" @commit="updateTask" />
         </TableRow>
         <TableRow>
             <TableHead> Collaborators </TableHead>
             <TableCell>
                 <div class="flex">
                     <Avatar class="-mr-4 border border-primary hover:scale-110 transition-transform"
-                        v-for="collab in task.collaborators" :key="collab">
-                        <RouterLink class="w-full h-full flex items-center justify-center" to="">
-                            <AvatarImage src="" alt="" />
+                        v-for="collab in collabs" :key="collab.id">
+                        <RouterLink class="w-full h-full flex items-center justify-center"
+                            :to="{ name: '/users/[username]', params: { username: collab.username } }">
+                            <AvatarImage :src="collab.avatar_url || ''" alt="" />
                             <AvatarFallback> </AvatarFallback>
                         </RouterLink>
                     </Avatar>
