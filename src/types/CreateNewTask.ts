@@ -1,6 +1,6 @@
 export interface CreateNewTask {
   name: string
   description: string
-  project: string
+  project_id: number
   profile_id: string
 }
