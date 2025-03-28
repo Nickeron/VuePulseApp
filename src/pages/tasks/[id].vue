@@ -2,7 +2,7 @@
 
 const tasksLoader = useTasksStore()
 const { task } = storeToRefs(tasksLoader)
-const { getTask, updateTask } = tasksLoader;
+const { getTask, updateTask, deleteTask } = tasksLoader;
 
 const id = useRoute('/tasks/[id]').params.id;
 
@@ -15,6 +15,15 @@ await getTask(id as unknown as number);
 const { getProfilesByIds } = useCollabs();
 // Get collaborators' profiles only when the task has collaborators ids
 const collabs = task.value?.collaborators ? await getProfilesByIds(task.value?.collaborators) : [];
+
+const deleteLoading = ref(false)
+const router = useRouter()
+const triggerDelete = async () => {
+    deleteLoading.value = true
+    await deleteTask()
+    deleteLoading.value = false
+    router.push({ name: '/tasks/' })
+}
 </script>
 
 <template>
@@ -88,5 +97,12 @@ const collabs = task.value?.collaborators ? await getProfilesByIds(task.value?.c
                 </TableCell>
             </TableRow>
         </Table>
+        <Button @click="triggerDelete" class="self-end mt-3 w-full max-w-40" variant="destructive">
+            <Transition name="scale" mode="out-in">
+                <iconify-icon v-if="deleteLoading" icon="lucide:loader-circle" class="mr-1 animate-spin"></iconify-icon>
+                <iconify-icon v-else icon="lucide:trash-2" class="mr-1"></iconify-icon>
+            </Transition>
+            Delete Task
+        </Button>
     </div>
 </template>
