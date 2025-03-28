@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CreateNewTask } from '@/types/CreateNewTask'
-import { profilesQuery, projectsQuery } from '@/utils/supaQueries';
+import { profilesQuery, projectsQuery, taskCreateCommand } from '@/utils/supaQueries';
 
 const sheetOpen = defineModel<boolean>()
 
@@ -34,12 +34,18 @@ const getOptions = async () => {
 }
 getOptions()
 
+const { profile } = storeToRefs(useAuthStore())
+
 const createTask = async (formData: CreateNewTask) => {
-    await new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(console.log(formData))
-        }, 2000)
-    })
+    const task = {
+        ...formData,
+        collaborators: [profile.value!.id]
+    }
+    const { error } = await taskCreateCommand(task)
+    if (error) {
+        console.log(error)
+    }
+    sheetOpen.value = false
 }
 </script>
 
@@ -49,14 +55,17 @@ const createTask = async (formData: CreateNewTask) => {
             <SheetHeader>
                 <SheetTitle>Create new task</SheetTitle>
             </SheetHeader>
-            <FormKit type="form" @submit="createTask" submit-label="Create Task">
-                <FormKit type="text" name="name" id="name" label="Name" placeholder="My new task" />
+            <FormKit type="form" @submit="createTask" submit-label="Create Task" :config="{
+                validationVisibility: 'submit'
+            }">
+                <FormKit type="text" name="name" id="name" label="Name" placeholder="My new task"
+                    validation="required|length:1,255" />
                 <FormKit type="select" name="profile_id" id="profile_id" label="User" placeholder="Select a user"
-                    :options="selectOptions.profiles" />
+                    :options="selectOptions.profiles" validation="required" />
                 <FormKit type="select" name="project_id" id="project_id" label="Project" placeholder="Select a project"
-                    :options="selectOptions.projects" />
+                    :options="selectOptions.projects" validation="required" />
                 <FormKit type="textarea" name="description" id="description" label="Description"
-                    placeholder="Task description" />
+                    placeholder="Task description" validation="length:0,500" />
             </FormKit>
         </SheetContent>
     </Sheet>
