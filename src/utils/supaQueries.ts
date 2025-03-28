@@ -4,6 +4,8 @@ import type { QueryData } from '@supabase/supabase-js'
 export const tasksWithProjectsQuery = supabase.from('tasks').select(`*, projects(id,name,slug)`)
 export const taskQuery = (id: number) =>
   supabase.from('tasks').select(`*, projects(id,name,slug)`).eq('id', id).single()
+export const taskUpdateQuery = (updateTask = {}, id: number) =>
+  supabase.from('tasks').update(updateTask).eq('id', id)
 
 export const projectsQuery = supabase.from('projects').select('*')
 export const projectQuery = (slug: string) =>
