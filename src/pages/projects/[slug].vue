@@ -1,4 +1,5 @@
 <script setup lang="ts">
+
 const { slug } = useRoute('/projects/[slug]').params
 const projectsLoader = useProjectsStore()
 const { project } = storeToRefs(projectsLoader)
@@ -9,6 +10,10 @@ watch(() => project.value?.name, () => {
 });
 
 await getProject(slug as string);
+
+const { getProfilesByIds } = useCollabs();
+// Get collaborators' profiles only when the project has collaborators ids
+const collabs = project.value?.collaborators ? await getProfilesByIds(project.value?.collaborators) : [];
 </script>
 
 <template>
@@ -36,9 +41,10 @@ await getProject(slug as string);
 			<TableCell>
 				<div class="flex">
 					<Avatar class="-mr-4 border border-primary hover:scale-110 transition-transform"
-						v-for="collab in project.collaborators" :key="collab">
-						<RouterLink class="w-full h-full flex items-center justify-center" to="">
-							<AvatarImage src="" alt="" />
+						v-for="collab in collabs" :key="collab.id">
+						<RouterLink class="w-full h-full flex items-center justify-center"
+							:to="{ name: '/users/[username]', params: { username: collab.username } }">
+							<AvatarImage :src="collab.avatar_url || ''" alt="" />
 							<AvatarFallback> </AvatarFallback>
 						</RouterLink>
 					</Avatar>
