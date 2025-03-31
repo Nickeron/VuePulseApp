@@ -7,11 +7,13 @@ import 'iconify-icon'
 
 import App from './App.vue'
 import router from './router'
+import { createMetaManager } from 'vue-meta'
 
 const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
+app.use(createMetaManager())
 app.use(plugin, config)
 
 app.mount('#app')
